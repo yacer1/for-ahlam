@@ -1,0 +1,157 @@
+/* ===== COLORS & TIMINGS — customize here ===== */
+:root{
+  --bg-top:#ffd9b8; --bg-mid:#f6a9a0; --bg-bottom:#7a4a7e;
+  --ink:#4a2a3e; --bubble:#fffaf2; --accent:#e8576f;
+  --font-ui:"Baloo 2",system-ui,sans-serif; --font-hand:"Caveat","Segoe Script",cursive;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;overflow:hidden;font-family:var(--font-ui);color:var(--ink);-webkit-tap-highlight-color:transparent}
+body{background:linear-gradient(170deg,var(--bg-top),var(--bg-mid) 55%,var(--bg-bottom))}
+button{font:inherit;border:0;background:none;cursor:pointer;padding:0}
+button:focus-visible{outline:3px solid #fff;outline-offset:6px;border-radius:16px}
+
+#loader{position:fixed;inset:0;z-index:50;display:grid;place-content:center;gap:10px;text-align:center;background:var(--bg-mid);transition:opacity .8s,visibility .8s}
+#loader.done{opacity:0;visibility:hidden}
+.loader-fox{font-size:54px;animation:bob 1.2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-8px)}}
+
+#stage{position:relative;height:100dvh;overflow:hidden}
+#sparkles span{position:absolute;bottom:-10px;width:var(--s);height:var(--s);border-radius:50%;background:#fff6d6;box-shadow:0 0 10px 3px rgba(255,236,170,.7);opacity:0;animation:float var(--d) linear var(--delay) infinite}
+@keyframes float{10%{opacity:.8}90%{opacity:.5}100%{transform:translate(var(--x),-110vh);opacity:0}}
+
+/* ---- fox placement ---- */
+#fox-wrap{position:absolute;left:50%;bottom:9%;width:min(300px,68vw);transform:translateX(-50%);
+  transition:left 1.2s var(--ease),bottom 1.2s var(--ease),width 1.2s var(--ease),transform 1.2s var(--ease);opacity:0;animation:enter 1.2s var(--ease) .2s forwards}
+@keyframes enter{from{opacity:0;transform:translate(-50%,40px) scale(.9)}to{opacity:1;transform:translate(-50%,0)}}
+#fox-btn{display:block;width:100%;transition:transform .3s var(--ease)}
+#fox-btn:hover{transform:scale(1.04)}
+#fox{width:100%;height:auto;display:block;overflow:visible;animation:breathe 3.6s ease-in-out infinite;transform-origin:50% 100%}
+@keyframes breathe{50%{transform:scaleY(1.025)}}
+[data-scene="cake"] #fox-wrap,[data-scene="wish"] #fox-wrap,[data-scene="out"] #fox-wrap{left:4%;bottom:3%;width:min(150px,30vw);transform:none;animation:none;opacity:1}
+[data-scene="cake"] #fox-btn,[data-scene="wish"] #fox-btn,[data-scene="out"] #fox-btn{pointer-events:none}
+
+/* ---- speech bubble ---- */
+#bubble{position:absolute;bottom:100%;left:50%;width:max-content;max-width:min(300px,84vw);padding:12px 22px;border-radius:24px;background:var(--bubble);
+  font-size:clamp(1.2rem,4.5vw,1.6rem);font-weight:700;text-align:center;box-shadow:0 8px 24px rgba(90,30,60,.25);
+  opacity:0;transform:translate(-50%,10px) scale(.8);transform-origin:50% 100%;transition:opacity .4s,transform .5s var(--ease);margin-bottom:-6px}
+#bubble::after{content:"";position:absolute;top:100%;left:50%;margin-left:-10px;border:10px solid transparent;border-top-color:var(--bubble)}
+#bubble.show{opacity:1;transform:translate(-50%,0) scale(1)}
+.hint{position:absolute;left:0;right:0;bottom:3%;text-align:center;color:#fff;font-weight:500;opacity:0;transition:opacity .6s;pointer-events:none;letter-spacing:.02em}
+.hint.show{opacity:.9;animation:pulse 1.8s ease-in-out infinite}
+[data-scene="intro"] #fox-wrap{bottom:11%}
+@keyframes pulse{50%{transform:translateY(-4px);opacity:.55}}
+
+/* ---- fox animation states ---- */
+#fox *{transform-box:fill-box}
+#fox .head{transform-origin:50% 100%;transition:transform .7s var(--ease)}
+#fox .arm{transition:transform .8s var(--ease)}
+#fox .armL{transform-origin:100% 0}#fox .armR{transform-origin:0 0}
+#fox .tail{transform-origin:0 100%;animation:tail 3s ease-in-out infinite}
+@keyframes tail{50%{transform:rotate(6deg)}}
+#fox .eye{transform-origin:50% 50%;animation:blink 4.5s infinite}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.08)}}
+#fox .eyes-happy,#fox .brows,#fox .sweat,#fox .mouth{opacity:0;transition:opacity .35s}
+#fox .m-smile{opacity:1}
+/* waving */
+#fox[data-state="waving"] .armR{animation:wave .7s ease-in-out infinite alternate}
+@keyframes wave{from{transform:rotate(-125deg)}to{transform:rotate(-160deg)}}
+#fox[data-state="waving"] .head{transform:rotate(-3deg)}
+#fox[data-state="waving"] .m-smile{opacity:0}#fox[data-state="waving"] .m-open{opacity:1;animation:talk .35s ease-in-out 4 alternate}
+@keyframes talk{to{transform:scaleY(.6)}}
+/* sad */
+#fox[data-state="sad"] .head{transform:rotate(5deg) translateY(8px)}
+#fox[data-state="sad"] .armR{transform:rotate(8deg)}#fox[data-state="sad"] .armL{transform:rotate(-8deg)}
+#fox[data-state="sad"] .m-smile{opacity:0}#fox[data-state="sad"] .m-sad{opacity:1}
+#fox[data-state="sad"] .brows,#fox[data-state="sad"] .sweat{opacity:1}
+#fox[data-state="sad"] .sweat{animation:drip 1.8s ease-in infinite}
+@keyframes drip{from{transform:translateY(-4px)}to{transform:translateY(10px);opacity:0}}
+#fox[data-state="sad"]{animation:sway 2.4s ease-in-out infinite}
+@keyframes sway{50%{transform:rotate(-1.5deg) scaleY(.99)}}
+/* happy */
+#fox[data-state="happy"] .eyes-open{opacity:0}#fox[data-state="happy"] .eyes-happy{opacity:1}
+#fox[data-state="happy"]{animation:hop 1.6s ease-in-out infinite}
+@keyframes hop{50%{transform:translateY(-6px)}}
+#fox[data-state="happy"] .armR{transform:rotate(-20deg)}#fox[data-state="happy"] .armL{transform:rotate(20deg)}
+#fox[data-state="transition"] .head{transform:scale(.97)}
+
+/* ---- cake ---- */
+#cake-wrap{position:absolute;left:50%;bottom:24%;width:min(340px,82vw);transform:translate(-50%,120px);opacity:0;visibility:hidden;transition:transform 1.4s var(--ease),opacity 1s,visibility 1s;text-align:center}
+#cake-wrap.show{transform:translate(-50%,0);opacity:1;visibility:visible}
+@media(min-width:760px){#cake-wrap{bottom:12%;left:56%;width:380px}}
+#cake{width:100%;display:block;overflow:visible;filter:drop-shadow(0 18px 20px rgba(80,20,60,.3))}
+#cake *{transform-box:fill-box}
+.flame,.halo,.smoke{transform-origin:50% 100%;transition:transform .6s ease-in,opacity .5s}
+.flame,.halo{transform:scale(0);opacity:0}
+.lit .flame{transform:scale(1);opacity:1;animation:flicker .45s ease-in-out infinite alternate}
+.lit .halo{transform:scale(1);opacity:.9;animation:glow 1.6s ease-in-out infinite alternate}
+@keyframes flicker{from{transform:scale(1,1) rotate(-3deg)}to{transform:scale(.92,1.08) rotate(3deg)}}
+@keyframes glow{to{opacity:.55;transform:scale(1.15)}}
+.out .flame{animation:none;transform:scale(.2,.05) translateY(-6px);opacity:0;transition:transform .4s ease-in,opacity .4s}
+.out .halo{animation:none;opacity:0;transform:scale(.3)}
+.smoke circle{fill:#d9cfd6;opacity:0}
+.out .smoke circle{animation:smoke 2.4s ease-out forwards}
+.out .smoke circle:nth-child(2){animation-delay:.25s}.out .smoke circle:nth-child(3){animation-delay:.5s}
+@keyframes smoke{0%{opacity:0;transform:translate(0,0) scale(.6)}20%{opacity:.8}100%{opacity:0;transform:translate(8px,-60px) scale(3)}}
+#cake.clickable #candle-hit{cursor:pointer}
+#cake.clickable .candle{cursor:pointer}
+#cake.clickable .candle:hover{filter:brightness(1.1)}
+.wish{font-family:var(--font-hand);font-size:clamp(2rem,7vw,2.8rem);font-weight:700;color:#fff;text-shadow:0 2px 14px rgba(120,40,80,.55);
+  opacity:0;transform:translateY(10px) scale(.9);transition:opacity .8s,transform .8s var(--ease);margin-bottom:6px}
+.wish.show{opacity:1;transform:none;animation:shimmer 2.4s ease-in-out infinite}
+.wish.gone{opacity:0;transform:translateY(-24px) scale(1.15);transition:opacity .6s,transform .8s ease-in;animation:none}
+@keyframes shimmer{50%{text-shadow:0 0 22px #fff3b0}}
+
+/* ---- envelope ---- */
+#envelopes{position:absolute;top:6%;left:0;right:0;display:flex;justify-content:center;gap:clamp(14px,5vw,40px);pointer-events:none}
+.envelope{position:relative;pointer-events:auto;width:min(150px,38vw);aspect-ratio:3/2;perspective:700px;
+  transform:translateY(-60px) scale(.7);opacity:0;visibility:hidden;transition:transform 1.1s var(--ease),opacity .8s,visibility .8s}
+.envelope[data-i="1"]{transition-delay:.25s}
+.envelope.show{transform:none;opacity:1;visibility:visible;animation:floaty 2.6s ease-in-out 1.4s infinite}
+.envelope[data-i="1"].show{animation-delay:2s}
+@keyframes floaty{50%{transform:translateY(-8px) rotate(1.5deg)}}
+.envelope:hover:not(.open){filter:brightness(1.05) drop-shadow(0 0 14px #fff)}
+.envelope[data-i="1"] .env-body{background:#d9c8f0}.envelope[data-i="1"] .env-pocket{background:linear-gradient(135deg,#c9b5ea,#b8a0de)}.envelope[data-i="1"] .env-flap{background:#b39bdb}.envelope[data-i="1"] .env-seal{background:#8a63c9}
+.envelope.read{opacity:.55;animation:none}
+.envelope span{position:absolute}
+.env-body{inset:0;background:#f4cdb6;border-radius:8px;box-shadow:0 14px 26px rgba(80,20,60,.3)}
+.env-paper{left:9%;right:9%;top:8%;height:80%;background:#fffaf2;border-radius:4px;z-index:1;transition:transform .9s var(--ease) .35s}
+.env-pocket{inset:0;z-index:2;border-radius:8px;background:linear-gradient(135deg,#efbfa6,#e8a98f);clip-path:polygon(0 0,50% 56%,100% 0,100% 100%,0 100%)}
+.env-flap{left:0;right:0;top:0;height:58%;z-index:3;background:#e39d82;clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:50% 0;transition:transform .7s var(--ease),z-index 0s .3s}
+.env-seal{z-index:4;left:50%;top:44%;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:15px;transition:opacity .3s}
+.envelope.open{animation:none;pointer-events:none}
+.envelope.open .env-flap{transform:rotateX(180deg);z-index:0}
+.envelope.open .env-seal{opacity:0}
+.envelope.open .env-paper{transform:translateY(-62%)}
+
+/* ---- letter ---- */
+#letter-overlay{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:20px;background:rgba(50,20,50,0);backdrop-filter:blur(0);visibility:hidden;transition:background .9s,backdrop-filter .9s,visibility .9s}
+#letter-overlay.show{background:rgba(50,20,50,.55);backdrop-filter:blur(5px);visibility:visible}
+#letter{width:min(520px,100%);max-height:84dvh;overflow:auto;padding:clamp(24px,6vw,44px);border-radius:10px;background:#fffaf2 repeating-linear-gradient(transparent 0 33px,rgba(232,87,111,.12) 33px 34px);
+  box-shadow:0 30px 70px rgba(0,0,0,.4);font-family:var(--font-hand);font-size:clamp(1.35rem,4.6vw,1.7rem);line-height:34px;
+  transform:translateY(160px) scale(.35) rotate(-3deg);opacity:0;transition:transform 1.2s var(--ease),opacity .8s}
+#letter-overlay.show #letter{transform:none;opacity:1}
+#letter h2{font-size:1.25em;color:var(--accent);margin-bottom:12px;line-height:34px}
+#letter p{margin-bottom:34px}
+#letter-body p{white-space:pre-line}
+#letter-sign{text-align:right;margin:0!important}
+
+#music-btn{position:fixed;top:14px;right:14px;z-index:30;width:42px;height:42px;border-radius:50%;background:rgba(255,250,242,.85);color:var(--ink);font-size:20px;box-shadow:0 4px 14px rgba(90,30,60,.25);transition:transform .3s}
+#music-btn:hover{transform:scale(1.1)}
+#music-btn.muted{opacity:.6}#music-btn.muted::after{content:"";position:absolute;left:8px;right:8px;top:50%;height:2px;background:var(--ink);transform:rotate(-40deg)}
+
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-iteration-count:1!important;transition-duration:.01s!important}}
+
+/* wind */
+.gust{fill:none;stroke:#fff;stroke-width:3;stroke-linecap:round;opacity:0;animation:gust .9s ease-in forwards}
+@keyframes gust{0%{opacity:0;transform:translateX(-140px)}25%{opacity:.85}100%{opacity:0;transform:translateX(330px)}}
+.blowing .lit .flame{animation:lean .55s ease-in forwards}
+@keyframes lean{to{transform:rotate(38deg) scale(.9,.75)}}
+#letter-close{position:sticky;float:right;top:0;width:34px;height:34px;border-radius:50%;background:rgba(232,87,111,.15);color:var(--accent);font-size:22px;line-height:1;margin:-12px -12px 0 0}
+#music-btn.needs-file{animation:pulse 1.8s ease-in-out infinite}
+
+/* text written on the outside of each envelope */
+.env-label{z-index:5;left:8%;right:8%;bottom:9%;text-align:center;font-family:var(--font-hand);font-weight:700;font-size:clamp(1rem,3.8vw,1.2rem);line-height:1.05;color:var(--ink);transition:opacity .3s}
+.envelope.open .env-label{opacity:0}
+
+#fx{position:fixed;inset:0;width:100%;height:100%;z-index:25;pointer-events:none}
